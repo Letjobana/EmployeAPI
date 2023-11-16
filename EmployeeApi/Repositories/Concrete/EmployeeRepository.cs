@@ -2,6 +2,7 @@
 using EmployeeApi.Models;
 using EmployeeApi.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,6 +60,23 @@ namespace EmployeeApi.Repositories.Concrete
                 return result;
             }
             return null;
+        }
+        public async Task<IEnumerable<Employee>> Search(string name, Gender? gender)
+        {
+            IQueryable<Employee> query = context.Employees;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(e => e.FirstName.Contains(name)
+                            || e.LastName.Contains(name));
+            }
+
+            if (gender != null)
+            {
+                query = query.Where(e => e.Gender == gender);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }
